@@ -14,4 +14,14 @@ public class RegisterServiceImpl implements RegisterService {
     public void sendMail(User user) {
 
     }
+
+    @Override
+    public void createValidationToken(User user, String token) {
+
+    }
+
+    @Override
+    public void validateToken(String aValidToken) {
+
+    }
 }

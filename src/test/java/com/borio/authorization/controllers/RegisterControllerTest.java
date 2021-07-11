@@ -1,21 +1,28 @@
 package com.borio.authorization.controllers;
 
 import com.borio.authorization.domain.User;
+import com.borio.authorization.domain.events.OnRegistrationCompleteEvent;
 import com.borio.authorization.domain.exceptions.EmailAlreadyRegisteredException;
+import com.borio.authorization.domain.exceptions.TokenExpiredException;
+import com.borio.authorization.domain.exceptions.TokenNotFoundException;
 import com.borio.authorization.services.RegisterService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -27,6 +34,9 @@ public class RegisterControllerTest {
 
     @MockBean
     private RegisterService registerService;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Test
     public void shouldRegisterANewUser() throws Exception {
@@ -47,7 +57,7 @@ public class RegisterControllerTest {
     }
 
     @Test
-    public void registrationShouldSendAnEmail() throws Exception {
+    public void registrationShouldRegisterAnOnRegistrationCompleteEvent() throws Exception {
 
         User user = new User();
         user.setId(1L);
@@ -62,7 +72,7 @@ public class RegisterControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists());
 
-        verify(registerService,times(1)).sendMail(user);
+        verify(applicationEventPublisher,times(1)).publishEvent(any(OnRegistrationCompleteEvent.class));
     }
 
     @Test
@@ -83,5 +93,61 @@ public class RegisterControllerTest {
         verify(registerService,times(0)).sendMail(user);
 
     }
+
+    @Test
+    public void shouldValidateTheTokenThatComesInTheRequest() throws Exception {
+
+        String aValidToken = "ABCDEFG123456";
+        this.mockMvc.perform(get("/register/complete?token="+aValidToken))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(registerService, times(1)).validateToken(aValidToken);
+    }
+
+    @Test
+    public void shouldReturnErrorWhenTokenIsNotFound() throws Exception {
+
+        String aInvalidToken = "XXXXXXXX----------";
+
+        doThrow(TokenNotFoundException.class).
+        when(registerService).validateToken(aInvalidToken);
+
+        this.mockMvc.perform(get("/register/complete?token="+aInvalidToken))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
+    }
+
+    @Test
+    public void shouldReturnErrorWhenTokenIsExpired() throws Exception {
+
+        String aInvalidToken = "XXXXXXXX----------";
+
+        doThrow(TokenExpiredException.class).
+                when(registerService).validateToken(aInvalidToken);
+
+        this.mockMvc.perform(get("/register/complete?token="+aInvalidToken))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
+    }
+
+
+    /** Spring does now allow to Mock ApplicationEventPublisher as
+     * a normal interface. Without this workaround it will inject
+     * the true implementation instead of the mocked one
+     */
+    @TestConfiguration
+    static class MockitoPublisherConfiguration {
+
+        @Bean
+        @Primary
+        ApplicationEventPublisher publisher() {
+            return mock(ApplicationEventPublisher.class);
+        }
+    }
+
+
 
 }
