@@ -90,8 +90,6 @@ public class RegisterControllerTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
 
-        verify(registerService,times(0)).sendMail(user);
-
     }
 
     @Test
