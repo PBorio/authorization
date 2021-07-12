@@ -120,12 +120,12 @@ public class RegisterControllerTest {
     @Test
     public void shouldReturnErrorWhenTokenIsExpired() throws Exception {
 
-        String aInvalidToken = "XXXXXXXX----------";
+        String anExpiredToken = "XXXXXXXX----------";
 
         doThrow(TokenExpiredException.class).
-                when(registerService).validateToken(aInvalidToken);
+                when(registerService).validateToken(anExpiredToken);
 
-        this.mockMvc.perform(get("/register/complete?token="+aInvalidToken))
+        this.mockMvc.perform(get("/register/complete?token="+anExpiredToken))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
 
