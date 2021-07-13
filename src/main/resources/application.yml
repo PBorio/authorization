@@ -22,7 +22,19 @@ spring:
       path: /h2-console
 
   mail:
-    host: test
-    username: test
-    password: test
-    port: 9090
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USER}
+    password: ${MAIL_PASS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging:
+  level:
+    root: WARN
+    com:
+      borio: TRACE

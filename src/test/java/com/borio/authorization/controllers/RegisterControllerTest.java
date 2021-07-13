@@ -30,13 +30,13 @@ public class RegisterControllerTest {
 
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @MockBean
-    private RegisterService registerService;
+    RegisterService registerService;
 
     @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
+    ApplicationEventPublisher applicationEventPublisher;
 
     @Test
     public void shouldRegisterANewUser() throws Exception {
@@ -76,6 +76,42 @@ public class RegisterControllerTest {
     }
 
     @Test
+    public void shouldReturnAnErrorWhenEmailIsNotInformed() throws Exception {
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@test.com");
+
+        when(registerService.save(any(User.class))).thenReturn(user);
+
+        this.mockMvc.perform(post("/register")
+                .content("{ \"email\": \"\", \"password\": \"12345\" }")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
+        verify(applicationEventPublisher,times(1)).publishEvent(any(OnRegistrationCompleteEvent.class));
+    }
+
+    @Test
+    public void shouldReturnAnErrorWhenEmailIsNotValid() throws Exception {
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@test.com");
+
+        when(registerService.save(any(User.class))).thenReturn(user);
+
+        this.mockMvc.perform(post("/register")
+                .content("{ \"email\": \"abcde\", \"password\": \"12345\" }")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+
+        verify(applicationEventPublisher,times(1)).publishEvent(any(OnRegistrationCompleteEvent.class));
+    }
+
+    @Test
     public void shouldReturnErrorWhenAnEmailIsAlreadyRegistered() throws Exception {
 
         User user = new User();
@@ -95,10 +131,17 @@ public class RegisterControllerTest {
     @Test
     public void shouldValidateTheTokenThatComesInTheRequest() throws Exception {
 
+        User user = new User();
+        user.setId(1L);
+
         String aValidToken = "ABCDEFG123456";
+
+        when(registerService.validateToken(aValidToken)).thenReturn(user);
+
         this.mockMvc.perform(get("/register/complete?token="+aValidToken))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists());
 
         verify(registerService, times(1)).validateToken(aValidToken);
     }

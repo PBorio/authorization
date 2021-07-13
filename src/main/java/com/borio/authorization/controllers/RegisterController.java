@@ -13,7 +13,9 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.Date;
 import java.util.Locale;
 
 @RestController
@@ -31,7 +33,7 @@ public class RegisterController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@RequestBody UserForm userForm,
+    public ResponseEntity<UserDto> register(@Valid @RequestBody UserForm userForm,
                                             HttpServletRequest request,
                                             UriComponentsBuilder uriComponentsBuilder) {
 
@@ -41,17 +43,16 @@ public class RegisterController {
         URI uri = uriComponentsBuilder.path("/user/{id}").buildAndExpand(userDto.getId()).toUri();
         String appUrl = request.getContextPath();
         this.applicationEventPublisher.publishEvent(
-                   new OnRegistrationCompleteEvent(createdUser, request.getLocale(), appUrl));
+                   new OnRegistrationCompleteEvent(createdUser, request.getLocale(), appUrl, new Date()));
 
         return ResponseEntity.created(uri).body(userDto);
 
     }
 
     @GetMapping("/register/complete")
-    public ResponseEntity<String> registerConfirmation(@RequestParam String token) {
-
-        this.registerService.validateToken(token);
-        return ResponseEntity.ok().body("User successfully verified");
+    public ResponseEntity<UserDto> registerConfirmation(@RequestParam String token) {
+        User user = this.registerService.validateToken(token);
+        return ResponseEntity.ok().body(new UserDto(user.getId(), user.getEmail()));
     }
 
 }

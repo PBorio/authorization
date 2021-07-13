@@ -2,13 +2,13 @@ package com.borio.authorization.services;
 
 import com.borio.authorization.domain.User;
 
+import java.util.Date;
+
 public interface RegisterService {
 
-    User save(User convert);
+    User save(User user);
 
-    void sendMail(User user);
+    void createValidationToken(User user, String token, Date expiryDate);
 
-    void createValidationToken(User user, String token);
-
-    void validateToken(String aValidToken);
+    User validateToken(String aValidToken);
 }

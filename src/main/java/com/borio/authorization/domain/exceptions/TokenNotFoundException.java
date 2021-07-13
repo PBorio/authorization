@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value= HttpStatus.BAD_REQUEST, reason="Token Not Found")
 public class TokenNotFoundException extends GeneralAuthorizationException {
 
+    public TokenNotFoundException(String message, Throwable e) {
+        super(message, e);
+    }
+
     public TokenNotFoundException(String message) {
         super(message);
     }

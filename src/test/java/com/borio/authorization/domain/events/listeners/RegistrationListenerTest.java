@@ -12,6 +12,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import java.util.Date;
 import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,20 +38,20 @@ public class RegistrationListenerTest {
 
     @Test
     public void onApplicationEventShouldCreateANewValidationToken() {
-        registrationListener.onApplicationEvent(new OnRegistrationCompleteEvent(new User(), Locale.GERMANY, ""));
-        verify(registerService,times(1)).createValidationToken(any(User.class), anyString());
+        registrationListener.onApplicationEvent(new OnRegistrationCompleteEvent(new User(), Locale.GERMANY, "", new Date()));
+        verify(registerService,times(1)).createValidationToken(any(User.class), anyString(), any(Date.class));
     }
 
     @Test
     public void onApplicationEventShouldCreateAnEmailMessage() {
-        registrationListener.onApplicationEvent(new OnRegistrationCompleteEvent(new User(), Locale.GERMANY, ""));
+        registrationListener.onApplicationEvent(new OnRegistrationCompleteEvent(new User(), Locale.GERMANY, "", new Date()));
         verify(messageSource,times(1)).getMessage(anyString(), any(), any(Locale.class));
     }
 
     @Test
     public void onApplicationEventShouldSendAnEmailToTheUser() {
         User user = new User("test@test.com", "12345", false);
-        registrationListener.onApplicationEvent(new OnRegistrationCompleteEvent(user, Locale.GERMANY, ""));
+        registrationListener.onApplicationEvent(new OnRegistrationCompleteEvent(user, Locale.GERMANY, "", new Date()));
         verify(mailSender,times(1)).send(any(SimpleMailMessage.class));
     }
 

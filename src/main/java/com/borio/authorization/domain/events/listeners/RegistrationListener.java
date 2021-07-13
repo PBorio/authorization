@@ -10,6 +10,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 @Component
@@ -29,13 +31,20 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
         User user = event.getUser();
         String token = UUID.randomUUID().toString();
-        registerService.createValidationToken(user, token);
+
+        Date expiryDate = event.getCreateTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(expiryDate);
+        cal.add(Calendar.DATE, -1);
+        expiryDate = cal.getTime();
+
+        registerService.createValidationToken(user, token, expiryDate);
 
         String recipientAddress = user.getEmail();
         String subject = "Registration Confirmation";
         String confirmationUrl
-                = event.getAppUrl() + "/regitration/confirm?token=" + token;
-        String message = messages.getMessage("message.regSucc", null, event.getLocale());
+                = event.getAppUrl() + "/register/complete?token=" + token;
+        String message = messages.getMessage("register.success", null, event.getLocale());
 
         SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);

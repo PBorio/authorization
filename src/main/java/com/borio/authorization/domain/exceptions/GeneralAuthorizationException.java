@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value= HttpStatus.BAD_REQUEST, reason="Bad Request")
 public class GeneralAuthorizationException extends RuntimeException {
 
+    public GeneralAuthorizationException(String message, Throwable e) {
+        super(message, e);
+    }
+
     public GeneralAuthorizationException(String message) {
         super(message);
     }
