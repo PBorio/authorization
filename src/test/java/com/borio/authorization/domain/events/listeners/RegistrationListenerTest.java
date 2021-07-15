@@ -45,7 +45,7 @@ public class RegistrationListenerTest {
     @Test
     public void onApplicationEventShouldCreateAnEmailMessage() {
         registrationListener.onApplicationEvent(new OnRegistrationCompleteEvent(new User(), Locale.GERMANY, "", new Date()));
-        verify(messageSource,times(1)).getMessage(anyString(), any(), any(Locale.class));
+        verify(messageSource,times(2)).getMessage(anyString(), any(), any(Locale.class));
     }
 
     @Test

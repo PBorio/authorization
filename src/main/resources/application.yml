@@ -4,11 +4,11 @@ spring:
       on-profile: default
 
 # datasource
-  datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:alura-forum
-    username: sa
-    password:
+#  datasource:
+    #    driverClassName: org.h2.Driver
+    #url: jdbc:h2:mem:master
+    #username: sa
+    #password:
 
   # jpa
   jpa:
@@ -32,6 +32,41 @@ spring:
           auth: true
           starttls:
             enable: true
+
+multitenancy:
+  datasource-cache:
+    maximumSize: 100
+    expireAfterAccess: 1
+  master:
+    repository:
+      packages: com.borio.authorization.config.multinenancy.client.per.database.repositories
+    entityManager:
+      packages: com.borio.authorization.config.multinenancy.client.per.database.model
+    datasource:
+      #url: jdbc:postgresql://localhost:5432/master
+      url: jdbc:h2:mem:master
+      username: sa
+      password:
+    liquibase:
+      changeLog: classpath:db/changelog/db.changelog-master.xml
+  tenant:
+    repository:
+      packages: com.borio.authorization.repositories
+    entityManager:
+      packages: com.borio.authorization.domain
+    datasource:
+      #url-prefix: jdbc:postgresql://localhost:5432
+      url-prefix: jdbc:h2:mem
+      hikari:
+        maximumPoolSize: 2
+        minimumIdle: 0
+        idleTimeout: 30000
+    liquibase:
+      changelog: classpath:db/changelog/db.changelog-tenant.xml
+
+encryption:
+  secret: verySecret
+  salt: jozo
 
 logging:
   level:

@@ -35,13 +35,13 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         Date expiryDate = event.getCreateTime();
         Calendar cal = Calendar.getInstance();
         cal.setTime(expiryDate);
-        cal.add(Calendar.DATE, -1);
+        cal.add(Calendar.DATE, 1);
         expiryDate = cal.getTime();
 
         registerService.createValidationToken(user, token, expiryDate);
 
         String recipientAddress = user.getEmail();
-        String subject = "Registration Confirmation";
+        String subject = messages.getMessage("register.confirmation", null, event.getLocale());
         String confirmationUrl
                 = event.getAppUrl() + "/register/complete?token=" + token;
         String message = messages.getMessage("register.success", null, event.getLocale());
