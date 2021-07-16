@@ -22,7 +22,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,8 +49,8 @@ public class RegisterControllerTest {
         when(registerService.save(any(User.class))).thenReturn(user);
 
         this.mockMvc.perform(post("/register")
-                             .content("{ \"email\": \"test@test.com\", \"password\": \"12345\" }")
-                             .contentType(MediaType.APPLICATION_JSON))
+                .content("{ \"email\": \"test@test.com\", \"password\": \"12345\" }")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists());
@@ -90,7 +91,6 @@ public class RegisterControllerTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
 
-        verify(applicationEventPublisher,times(1)).publishEvent(any(OnRegistrationCompleteEvent.class));
     }
 
     @Test
@@ -108,7 +108,6 @@ public class RegisterControllerTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
 
-        verify(applicationEventPublisher,times(1)).publishEvent(any(OnRegistrationCompleteEvent.class));
     }
 
     @Test
@@ -174,7 +173,6 @@ public class RegisterControllerTest {
 
     }
 
-
     /** Spring does now allow to Mock ApplicationEventPublisher as
      * a normal interface. Without this workaround it will inject
      * the true implementation instead of the mocked one
@@ -188,7 +186,4 @@ public class RegisterControllerTest {
             return mock(ApplicationEventPublisher.class);
         }
     }
-
-
-
 }

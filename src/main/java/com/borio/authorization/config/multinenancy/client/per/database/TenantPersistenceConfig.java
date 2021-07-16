@@ -26,11 +26,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@EnableJpaRepositories(
+/*@EnableJpaRepositories(
         basePackages = { "${multitenancy.tenant.repository.packages}" },
         entityManagerFactoryRef = "tenantEntityManagerFactory",
         transactionManagerRef = "tenantTransactionManager"
-)
+)*/
 @EnableConfigurationProperties(JpaProperties.class)
 public class TenantPersistenceConfig {
 

@@ -75,7 +75,7 @@ public class TenantManagementServiceImpl implements TenantManagementService  {
         String url = urlPrefix+db;
         String encryptedPassword = encryptionService.encrypt(password, secret, salt);
         try {
-            createDatabase(db, password);
+            createDatabase(db, encryptedPassword);
         } catch (DataAccessException e) {
             throw new TenantCreationException("Error when creating db: " + db, e);
         }

@@ -24,11 +24,11 @@ import java.util.Map;
 
 
 @Configuration
-@EnableJpaRepositories(
+/*@EnableJpaRepositories(
         basePackages = { "${multitenancy.master.repository.packages}" },
         entityManagerFactoryRef = "masterEntityManagerFactory",
         transactionManagerRef = "masterTransactionManager"
-)
+)*/
 @EnableConfigurationProperties({DataSourceProperties.class, JpaProperties.class})
 public class MasterPersistenceConfig {
 
