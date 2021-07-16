@@ -3,20 +3,20 @@ spring:
     activate:
       on-profile: default
 
+# datasource
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:authorization
+    username: sa
+    password:
+
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
 
-# datasource
-#  datasource:
-    #    driverClassName: org.h2.Driver
-    #url: jdbc:h2:mem:master
-    #username: sa
-    #password:
-
   # jpa
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate.ddl-auto: update
+  #jpa:
+    #database-platform: org.hibernate.dialect.H2Dialect
+    #hibernate.ddl-auto: update
 
   # h2
   h2:
