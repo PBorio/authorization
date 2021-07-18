@@ -36,7 +36,9 @@ spring:
           starttls:
             enable: true
 
-
+  jpa:
+    hibernate:
+      use-new-id-generator-mappings: false
 
 encryption:
   secret: verySecret

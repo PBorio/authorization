@@ -21,7 +21,7 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                 <constraints primaryKey="true"/>
             </column>
             <column name="token" type="VARCHAR(255)"/>
-            <column name="expireDate" type="datetime"/>
+            <column name="expire_date" type="datetime"/>
             <column name="enabled" type="boolean"/>
             <column name="user_id" type="BIGINT"/>
         </createTable>
