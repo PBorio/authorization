@@ -2,18 +2,20 @@ package com.borio.authorization.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.NaturalId;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "users")
 @Data
 @NoArgsConstructor
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,6 +28,9 @@ public class User {
     private String password;
 
     private boolean enabled;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Role> roles = new ArrayList<>();
 
     public User(String email, String password, boolean enabled){
         this.email = email;
@@ -48,4 +53,28 @@ public class User {
     }
 
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
 }

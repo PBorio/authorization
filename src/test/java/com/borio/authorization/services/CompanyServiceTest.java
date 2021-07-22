@@ -34,7 +34,7 @@ public class CompanyServiceTest {
     CompanyServiceImpl companyService;
 
     @Test
-    public void shouldSaveANewUserAndGiveItBackToTheClient(){
+    public void shouldSaveANewCompanyAndGiveItBackToTheClient(){
 
         CompanyForm companyForm = new CompanyForm();
         companyForm.setUserId(1L);

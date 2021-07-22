@@ -9,10 +9,12 @@ import com.borio.authorization.repositories.TokenRepository;
 import com.borio.authorization.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -33,13 +35,14 @@ public class RegisterServiceImpl implements RegisterService {
     @Override
     public User save(User user) {
 
-        List<User> users = userRepository.findByEmail(user.getEmail());
+        Optional<User> oUser = userRepository.findByEmail(user.getEmail());
 
-        if (!users.isEmpty()) {
+        if (!oUser.isEmpty()) {
             throw new EmailAlreadyRegisteredException("Email is already registered");
         }
 
         try {
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
             return userRepository.save(user);
         } catch (RuntimeException e) {
             log.error(e.getMessage(),e);

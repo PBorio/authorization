@@ -24,4 +24,6 @@ public class CompanyDto {
         this.alias = company.getAlias();
         this.user = new UserDto(company.getUser().getId(),company.getUser().getEmail());
     }
+
+
 }

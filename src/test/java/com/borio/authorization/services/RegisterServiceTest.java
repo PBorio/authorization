@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,10 +54,9 @@ public class RegisterServiceTest {
 
         User alreadyRegisteredUser = new User();
         alreadyRegisteredUser.setEmail("test@test.com");
-        List<User> foundedUsers = new ArrayList<>();
-        foundedUsers.add(alreadyRegisteredUser);
+        Optional<User> oUser = Optional.of(alreadyRegisteredUser);
 
-        when(userRepository.findByEmail("test@test.com")).thenReturn(foundedUsers);
+        when(userRepository.findByEmail("test@test.com")).thenReturn(oUser);
 
         assertThrows(EmailAlreadyRegisteredException.class, () ->
                 registerService.save(alreadyRegisteredUser));
