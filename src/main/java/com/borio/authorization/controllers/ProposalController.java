@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
+@RequestMapping("/proposals")
 public class ProposalController {
 
     private final ProposalService proposalService;
@@ -28,14 +30,14 @@ public class ProposalController {
         this.proposalService = proposalService;
     }
 
-    @PostMapping("/proposal")
+    @PostMapping
     public ResponseEntity<ProposalDto> createCompany(@Valid @RequestBody ProposalForm proposalForm,
                                                     UriComponentsBuilder uriComponentsBuilder) {
 
         Proposal createdProposal = this.proposalService.save(proposalForm);
         ProposalDto proposalDto = new ProposalDto(createdProposal);
 
-        URI uri = uriComponentsBuilder.path("/company/{id}").buildAndExpand(proposalDto.getId()).toUri();
+        URI uri = uriComponentsBuilder.path("/companies/{id}").buildAndExpand(proposalDto.getId()).toUri();
 
         return ResponseEntity.created(uri).body(proposalDto);
     }

@@ -18,8 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@Profile({"prod", "dev", "default"})
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@Profile("test")
+public class DevSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthService authService;
@@ -35,13 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.authorizeRequests()
-                 .antMatchers(HttpMethod.POST,"/register").permitAll()
-                 .antMatchers(HttpMethod.GET,"/register/*").permitAll()
-                 .antMatchers(HttpMethod.POST,"/auth").permitAll()
-                 .antMatchers(HttpMethod.GET,"/actuator*").permitAll()
-                 .antMatchers(HttpMethod.GET,"/actuator/*").permitAll()
-                 .antMatchers(HttpMethod.POST,"/company").hasRole(SecurityConstants.COMPANY_ADMIN_ROLE)
-                 .anyRequest().authenticated()
+                 .antMatchers("/**").permitAll()
+                 .antMatchers("/*/*").permitAll()
                  .and().csrf().disable()
                  .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                  .and().addFilterBefore(new AuthFilter(tokenService, userRepository), UsernamePasswordAuthenticationFilter.class);

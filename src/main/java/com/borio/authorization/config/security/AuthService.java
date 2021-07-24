@@ -1,4 +1,4 @@
-package com.borio.authorization.services.security;
+package com.borio.authorization.config.security;
 
 import com.borio.authorization.domain.User;
 import com.borio.authorization.repositories.UserRepository;
@@ -23,7 +23,7 @@ public class AuthService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> oUser = userRepository.findByEmail(username);
-        if (!oUser.isEmpty()) {
+        if (oUser.isPresent()) {
             return oUser.get();
         }
         throw new UsernameNotFoundException("Invalid Username or Password.");

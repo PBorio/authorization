@@ -1,10 +1,14 @@
 package com.borio.authorization.services;
 
+import com.borio.authorization.config.security.SecurityConstants;
+import com.borio.authorization.domain.Role;
 import com.borio.authorization.domain.User;
 import com.borio.authorization.domain.VerificationToken;
+import com.borio.authorization.domain.exceptions.AdminRoleNotFoundException;
 import com.borio.authorization.domain.exceptions.EmailAlreadyRegisteredException;
 import com.borio.authorization.domain.exceptions.GeneralAuthorizationException;
 import com.borio.authorization.domain.exceptions.TokenNotFoundException;
+import com.borio.authorization.repositories.RoleRepository;
 import com.borio.authorization.repositories.TokenRepository;
 import com.borio.authorization.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,25 +27,35 @@ public class RegisterServiceImpl implements RegisterService {
 
     private UserRepository userRepository;
 
-
     private TokenRepository tokenRepository;
 
+    private RoleRepository roleRepository;
+
     @Autowired
-    public RegisterServiceImpl(UserRepository userRepository, TokenRepository tokenRepository) {
+    public RegisterServiceImpl(UserRepository userRepository,
+                               TokenRepository tokenRepository,
+                               RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     public User save(User user) {
 
         Optional<User> oUser = userRepository.findByEmail(user.getEmail());
+        Optional<Role> oRole = roleRepository.findByName(SecurityConstants.COMPANY_ADMIN_ROLE);
 
-        if (!oUser.isEmpty()) {
+        if (oRole.isEmpty()) {
+            throw new AdminRoleNotFoundException("Email is already registered");
+        }
+
+        if (oUser.isPresent()) {
             throw new EmailAlreadyRegisteredException("Email is already registered");
         }
 
         try {
+            user.getRoles().add(oRole.get());
             user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
             return userRepository.save(user);
         } catch (RuntimeException e) {

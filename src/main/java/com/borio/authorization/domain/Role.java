@@ -1,9 +1,11 @@
 package com.borio.authorization.domain;
 
+import com.borio.authorization.config.security.SecurityConstants;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "roles")
@@ -16,8 +18,11 @@ public class Role implements GrantedAuthority {
 
     private String name;
 
+    //@ManyToMany(mappedBy = "roles", cascade = CascadeType.ALL)
+    //private List<User> users;
+
     @Override
     public String getAuthority() {
-        return name;
+        return SecurityConstants.SPRING_SECURITY_PREFIX+name;
     }
 }

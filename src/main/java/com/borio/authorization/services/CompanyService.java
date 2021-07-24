@@ -5,4 +5,6 @@ import com.borio.authorization.domain.Company;
 
 public interface CompanyService {
     Company create(CompanyForm any);
+
+    Company findById(Long id);
 }

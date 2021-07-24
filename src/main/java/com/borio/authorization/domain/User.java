@@ -30,6 +30,10 @@ public class User implements UserDetails {
     private boolean enabled;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles = new ArrayList<>();
 
     public User(String email, String password, boolean enabled){

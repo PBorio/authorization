@@ -1,0 +1,5 @@
+token:
+  jwt:
+    secret: 123456
+    expiration: 86400000
+

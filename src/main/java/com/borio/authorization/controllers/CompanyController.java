@@ -4,17 +4,17 @@ import com.borio.authorization.controllers.dtos.CompanyDto;
 import com.borio.authorization.controllers.forms.CompanyForm;
 import com.borio.authorization.domain.Company;
 import com.borio.authorization.services.CompanyService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
 
 @RestController
+@RequestMapping("/companies")
 public class CompanyController {
 
     private final CompanyService companyService;
@@ -24,7 +24,7 @@ public class CompanyController {
         this.companyService = companyService;
     }
 
-    @PostMapping("/company")
+    @PostMapping
     public ResponseEntity<CompanyDto> createCompany(@Valid @RequestBody CompanyForm companyForm,
                                                UriComponentsBuilder uriComponentsBuilder) {
 
@@ -34,6 +34,15 @@ public class CompanyController {
         URI uri = uriComponentsBuilder.path("/company/{id}").buildAndExpand(companyDto.getId()).toUri();
 
         return ResponseEntity.created(uri).body(companyDto);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CompanyDto> getCompany(@PathVariable Long id) {
+
+        Company company = this.companyService.findById(id);
+        CompanyDto companyDto = new CompanyDto(company);
+
+        return ResponseEntity.ok().body(companyDto);
     }
 
 }

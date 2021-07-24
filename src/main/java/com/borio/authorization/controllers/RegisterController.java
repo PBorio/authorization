@@ -5,6 +5,7 @@ import com.borio.authorization.controllers.forms.UserForm;
 import com.borio.authorization.domain.User;
 import com.borio.authorization.domain.events.OnRegistrationCompleteEvent;
 import com.borio.authorization.services.RegisterService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.net.URI;
 import java.util.Date;
 
 @RestController
+@Hidden
 public class RegisterController {
 
 

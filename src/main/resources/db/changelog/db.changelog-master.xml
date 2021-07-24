@@ -15,7 +15,13 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
             <column name="name" type="VARCHAR(32)"/>
         </createTable>
         <insert tableName="roles">
+            <column  name="name"  value="Rsystem-admin"/>
+        </insert>
+        <insert tableName="roles">
             <column  name="name"  value="company-admin"/>
+        </insert>
+        <insert tableName="roles">
+            <column  name="name"  value="user"/>
         </insert>
 
         <createTable tableName="users">
@@ -29,7 +35,7 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
         <createTable tableName="users_roles">
             <column name="user_id" type="BIGINT"/>
-            <column name="roles_id" type="BIGINT"/>
+            <column name="role_id" type="BIGINT"/>
         </createTable>
 
         <addForeignKeyConstraint baseColumnNames="user_id"
@@ -38,7 +44,7 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
 
-        <addForeignKeyConstraint baseColumnNames="roles_id"
+        <addForeignKeyConstraint baseColumnNames="role_id"
                                  baseTableName="users_roles"
                                  constraintName="fk_usr_role_id"
                                  referencedColumnNames="id"

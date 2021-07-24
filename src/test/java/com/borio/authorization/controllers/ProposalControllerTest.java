@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class ProposalControllerTest {
 
     @Autowired
@@ -46,7 +48,7 @@ public class ProposalControllerTest {
 
         when(proposalService.save(proposalForm)).thenReturn(proposal);
 
-        this.mockMvc.perform(post("/proposal")
+        this.mockMvc.perform(post("/proposals")
                 .content(new ObjectMapper().writeValueAsString(proposalForm))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -65,7 +67,7 @@ public class ProposalControllerTest {
                 "A Customer Name",
                 1L);
 
-        this.mockMvc.perform(post("/proposal")
+        this.mockMvc.perform(post("/proposals")
                 .content(new ObjectMapper().writeValueAsString(proposalForm))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -83,7 +85,7 @@ public class ProposalControllerTest {
                 "A Customer Name",
                 null); //null company id
 
-        this.mockMvc.perform(post("/proposal")
+        this.mockMvc.perform(post("/proposals")
                 .content(new ObjectMapper().writeValueAsString(proposalForm))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

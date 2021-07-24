@@ -4,6 +4,7 @@ import com.borio.authorization.controllers.forms.CompanyForm;
 import com.borio.authorization.domain.Company;
 import com.borio.authorization.domain.User;
 import com.borio.authorization.domain.exceptions.GeneralAuthorizationException;
+import com.borio.authorization.domain.exceptions.ResourceNotFoundException;
 import com.borio.authorization.domain.exceptions.UserNotFoundException;
 import com.borio.authorization.repositories.CompanyRepository;
 import com.borio.authorization.repositories.UserRepository;
@@ -53,5 +54,16 @@ public class CompanyServiceImpl implements CompanyService {
             log.error(e.getMessage(),e);
             throw new GeneralAuthorizationException(e.getMessage(),e);
         }
+    }
+
+    @Override
+    public Company findById(Long id) {
+        Optional<Company> oCompany = this.companyRepository.findById(id);
+
+        if (oCompany.isEmpty()) {
+            throw new ResourceNotFoundException("Company not found");
+        }
+
+        return oCompany.get();
     }
 }

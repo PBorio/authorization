@@ -5,14 +5,17 @@ import com.borio.authorization.controllers.forms.CompanyForm;
 import com.borio.authorization.domain.Company;
 import com.borio.authorization.domain.User;
 import com.borio.authorization.domain.exceptions.GeneralAuthorizationException;
+import com.borio.authorization.domain.exceptions.ResourceNotFoundException;
 import com.borio.authorization.domain.exceptions.UserNotFoundException;
 import com.borio.authorization.repositories.CompanyRepository;
 import com.borio.authorization.repositories.TokenRepository;
 import com.borio.authorization.repositories.UserRepository;
+import org.checkerframework.checker.nullness.Opt;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
@@ -22,6 +25,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public class CompanyServiceTest {
 
     @Mock
@@ -47,8 +51,8 @@ public class CompanyServiceTest {
         Company createdCompany = new Company();
         createdCompany.setId(1L);
         createdCompany.setUser(user);
-        createdCompany.setAlias("empresa_teste");
-        createdCompany.setName("Empresa Teste LTDA");
+        createdCompany.setAlias("company_test");
+        createdCompany.setName("Test Company Inc.");
 
         when(userRepository.findById(companyForm.getUserId())).thenReturn(Optional.of(user));
         when(companyRepository.save(any(Company.class))).thenReturn(createdCompany);
@@ -82,6 +86,18 @@ public class CompanyServiceTest {
 
         assertThrows(UserNotFoundException.class, () ->
                 companyService.create(companyForm));
+    }
+
+    @Test
+    public void whenNoCompanyIsFoundInFindByIdShouldThrowResourceNotFoundException(){
+
+        Long wrongCompanyId = 0_000L;
+        Optional<Company> emptyResult = Optional.empty();
+
+        when(companyRepository.findById(wrongCompanyId)).thenReturn(emptyResult);
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                companyService.findById(wrongCompanyId));
     }
 
 }
