@@ -89,6 +89,23 @@ public class CompanyServiceTest {
     }
 
     @Test
+    public void findByIdShouldReturnTheCompanyForTheId(){
+
+        Long companyId = 1L;
+
+        Company company = new Company();
+        company.setId(companyId);
+        company.setName("Test");
+        Optional<Company> optionalCompany = Optional.of(company);
+
+        when(companyRepository.findById(companyId)).thenReturn(optionalCompany);
+
+        Company result = companyService.findById(companyId);
+
+        assertNotNull(result);
+    }
+
+    @Test
     public void whenNoCompanyIsFoundInFindByIdShouldThrowResourceNotFoundException(){
 
         Long wrongCompanyId = 0_000L;

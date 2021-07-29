@@ -33,6 +33,14 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
             <column name="enabled" type="boolean"/>
         </createTable>
 
+        <addNotNullConstraint columnName="email"
+                              constraintName="nn_user_mail"
+                              tableName="users"/>
+
+        <addNotNullConstraint columnName="password"
+                              constraintName="nn_user_pass"
+                              tableName="users"/>
+
         <createTable tableName="users_roles">
             <column name="user_id" type="BIGINT"/>
             <column name="role_id" type="BIGINT"/>
@@ -43,6 +51,14 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                                  constraintName="fk_usr_user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
+
+        <addNotNullConstraint columnName="user_id"
+                              constraintName="nn_ur_user_id"
+                              tableName="users_roles"/>
+
+        <addNotNullConstraint columnName="role_id"
+                              constraintName="nn_ur_role_id"
+                              tableName="users_roles"/>
 
         <addForeignKeyConstraint baseColumnNames="role_id"
                                  baseTableName="users_roles"
@@ -65,6 +81,10 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
 
+        <addNotNullConstraint columnName="token"
+                              constraintName="nn_token"
+                              tableName="verification_token"/>
+
         <createTable tableName="companies">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -79,6 +99,10 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                                  constraintName="fk_co_user_id"
                                  referencedColumnNames="id"
                                  referencedTableName="users"/>
+
+        <addNotNullConstraint columnName="name"
+                              constraintName="nn_company_name"
+                              tableName="companies"/>
 
         <createTable tableName="customers">
             <column autoIncrement="true" name="id" type="BIGINT">
@@ -97,6 +121,14 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                                  referencedColumnNames="id"
                                  referencedTableName="companies"/>
 
+        <addNotNullConstraint columnName="name"
+                              constraintName="nn_customer_name"
+                              tableName="customers"/>
+
+        <addNotNullConstraint columnName="company_id"
+                              constraintName="nn_customer_company_id"
+                              tableName="customers"/>
+
         <createTable tableName="proposals">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
@@ -114,11 +146,47 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                                  referencedColumnNames="id"
                                  referencedTableName="companies"/>
 
+        <addNotNullConstraint columnName="description"
+                              constraintName="nn_description"
+                              tableName="proposals"/>
+
+        <addNotNullConstraint columnName="company_id"
+                              constraintName="nn_proposal_company_id"
+                              tableName="proposals"/>
+
         <addForeignKeyConstraint baseColumnNames="customer_id"
                                  baseTableName="proposals"
                                  constraintName="fk_cus_prop_id"
                                  referencedColumnNames="id"
                                  referencedTableName="customers"/>
+
+        <addNotNullConstraint columnName="customer_id"
+                              constraintName="nn_proposal_customer_id"
+                              tableName="proposals"/>
+
+        <createTable tableName="proposal_service_item">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="observation" type="VARCHAR(255)"/>
+            <column name="value" type="NUMERIC(10,2)"/>
+            <column name="proposal_id" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="proposal_id"
+                                 baseTableName="proposal_service_item"
+                                 constraintName="fk_psi_prop_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="proposals"/>
+
+        <addNotNullConstraint columnName="description"
+                              constraintName="nn_psi_description"
+                              tableName="proposal_service_item"/>
+
+        <addNotNullConstraint columnName="proposal_id"
+                              constraintName="nn_psi_proposal_id"
+                              tableName="proposal_service_item"/>
 
     </changeSet>
 

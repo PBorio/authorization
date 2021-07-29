@@ -4,14 +4,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "proposals")
+@Table(name = "proposal_service_item")
 @Data
 @NoArgsConstructor
-public class Proposal {
+public class ProposalServiceItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,12 +22,6 @@ public class Proposal {
     private Double value;
 
     @ManyToOne
-    private Customer customer;
-
-    @ManyToOne
-    private Company company;
-
-    @OneToMany(mappedBy = "proposal")
-    private List<ProposalServiceItem> items = new ArrayList<>();
+    private Proposal proposal;
 
 }

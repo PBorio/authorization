@@ -1,10 +1,9 @@
 package com.borio.authorization.controllers;
 
 import com.borio.authorization.controllers.forms.ProposalForm;
-import com.borio.authorization.domain.Company;
-import com.borio.authorization.domain.Customer;
+import com.borio.authorization.controllers.forms.ProposalServiceItemForm;
 import com.borio.authorization.domain.Proposal;
-import com.borio.authorization.domain.User;
+import com.borio.authorization.domain.ProposalServiceItem;
 import com.borio.authorization.helpers.ProposalStubHelper;
 import com.borio.authorization.services.ProposalService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,8 +15,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -90,6 +91,61 @@ public class ProposalControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void shouldAddAProposalServiceToAProposal() throws Exception {
+
+        ProposalServiceItemForm proposalServiceItemForm = new ProposalServiceItemForm(null,
+                "Description",
+                "A Observation",
+                100.0,
+                1L);
+
+        Proposal proposal = ProposalStubHelper.proposalStub();
+        ProposalServiceItem psi = new ProposalServiceItem();
+        psi.setId(101L);
+        psi.setProposal(proposal);
+        proposal.getItems().add(psi);
+        psi.setDescription(proposalServiceItemForm.getDescription());
+        psi.setObservation(proposalServiceItemForm.getObservation());
+        psi.setValue(proposalServiceItemForm.getValue());
+
+        when(proposalService.saveServiceItem(proposalServiceItemForm)).thenReturn(psi);
+        this.mockMvc.perform(post("/proposals/1/service")
+                .content(new ObjectMapper().writeValueAsString(proposalServiceItemForm))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists());
+    }
+
+    @Test
+    public void whenDescriptionIsNotInformedShouldReturnError() throws Exception {
+
+        ProposalServiceItemForm proposalServiceItemForm = new ProposalServiceItemForm(null,
+                null, //null description
+                "A Observation",
+                100.0,
+                1L);
+
+        this.mockMvc.perform(post("/proposals/1/service/1")
+                .content(new ObjectMapper().writeValueAsString(proposalServiceItemForm))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void shouldDeleteAServiceItem() throws Exception {
+
+        Long proposalId = 1L;
+        Long serviceId = 1L;
+
+        this.mockMvc.perform(delete("/proposals/"+proposalId+"/service/"+serviceId))
+                .andExpect(status().isOk());
+
+        verify(proposalService, times(1)).deleteServiceItem(proposalId,serviceId);
     }
 
 
