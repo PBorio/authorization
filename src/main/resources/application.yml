@@ -3,8 +3,8 @@ spring:
 # datasource
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:authorization
-    #url: jdbc:h2:file:~/authorization;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
+    #url: jdbc:h2:mem:authorization
+    url: jdbc:h2:file:E:\\data\\authorization;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE
     username: sa
     password:
 

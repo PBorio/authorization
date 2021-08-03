@@ -5,6 +5,7 @@ import com.borio.authorization.domain.Company;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -26,5 +27,7 @@ public class CompanyForm {
 
     @NotNull(message = "{company.user.null}")
     private Long userId;
+
+    private MultipartFile logo;
 
 }

@@ -5,6 +5,7 @@ import com.borio.authorization.domain.Company;
 import com.borio.authorization.domain.User;
 import com.borio.authorization.domain.exceptions.GeneralAuthorizationException;
 import com.borio.authorization.domain.exceptions.ResourceNotFoundException;
+import com.borio.authorization.domain.exceptions.SystemAuthorizationException;
 import com.borio.authorization.domain.exceptions.UserNotFoundException;
 import com.borio.authorization.repositories.CompanyRepository;
 import com.borio.authorization.repositories.UserRepository;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -31,11 +33,12 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public Company create(CompanyForm companyForm) {
 
-        Company company = new Company();
-        company.setName(companyForm.getName());
-        company.setAlias(companyForm.getAlias());
-
         try {
+            Company company = new Company();
+            company.setName(companyForm.getName());
+            company.setAlias(companyForm.getAlias());
+            company.setLogo(companyForm.getLogo().getBytes());
+
             Optional<User> oUser = userRepository.findById(companyForm.getUserId());
 
             if (oUser.isEmpty()) {
@@ -53,6 +56,9 @@ public class CompanyServiceImpl implements CompanyService {
         } catch(RuntimeException e) {
             log.error(e.getMessage(),e);
             throw new GeneralAuthorizationException(e.getMessage(),e);
+        } catch (IOException e) {
+            log.error(e.getMessage(),e);
+            throw new SystemAuthorizationException(e.getMessage(),e);
         }
     }
 

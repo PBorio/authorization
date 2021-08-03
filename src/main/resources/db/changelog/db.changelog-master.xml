@@ -189,7 +189,12 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                               tableName="proposal_service_item"/>
 
     </changeSet>
-
+    <changeSet author="Paulo" id="addBlobToCompany">
+        <addColumn tableName="companies" >
+            <column name="logo"
+                    type="BLOB"/>
+        </addColumn>
+    </changeSet>
 
 
 </databaseChangeLog>
