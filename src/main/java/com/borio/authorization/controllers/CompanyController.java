@@ -24,8 +24,8 @@ public class CompanyController {
         this.companyService = companyService;
     }
 
-    @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<CompanyDto> createCompany(@Valid @ModelAttribute CompanyForm companyForm,
+    @PostMapping
+    public ResponseEntity<CompanyDto> createCompany(@Valid @RequestBody CompanyForm companyForm,
                                                UriComponentsBuilder uriComponentsBuilder) {
 
         Company createdCompany = this.companyService.create(companyForm);

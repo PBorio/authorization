@@ -15,11 +15,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -146,6 +146,18 @@ public class ProposalControllerTest {
                 .andExpect(status().isOk());
 
         verify(proposalService, times(1)).deleteServiceItem(proposalId,serviceId);
+    }
+
+    @Test
+    public void shouldReturnAProposalReport() throws Exception {
+
+        Long proposalId = 1L;
+        Long serviceId = 1L;
+
+        this.mockMvc.perform(get("/proposals/"+proposalId+"/report/"))
+                .andExpect(status().isOk());
+
+        verify(proposalService, times(1)).generateReport(proposalId);
     }
 
 

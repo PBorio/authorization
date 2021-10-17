@@ -12,11 +12,19 @@ import com.borio.authorization.repositories.CustomerRepository;
 import com.borio.authorization.repositories.ProposalRepository;
 import com.borio.authorization.repositories.ProposalServiceItemRepository;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Optional;
 
 @Service
@@ -115,6 +123,16 @@ public class ProposalServiceImpl implements ProposalService {
         }
 
         return oProposal.get();
+    }
+
+    @Override
+    public void generateReport(Long proposalId) throws JRException, FileNotFoundException {
+        FileInputStream fis = new FileInputStream("classpath:/reports/proposal.jasper");
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(fis);
+
+        JasperReport jasperReport = (JasperReport) JRLoader.loadObject(bufferedInputStream);
+        /*JasperPrint jasperPrint = JasperFillManager.fillReport(
+                jasperReport, null, dataSource.getConnection());*/
     }
 
 

@@ -1,20 +1,20 @@
 package com.borio.authorization.controllers;
 
-import com.borio.authorization.controllers.dtos.CompanyDto;
 import com.borio.authorization.controllers.dtos.ProposalDto;
 import com.borio.authorization.controllers.dtos.ProposalServiceItemDto;
 import com.borio.authorization.controllers.forms.ProposalForm;
 import com.borio.authorization.controllers.forms.ProposalServiceItemForm;
-import com.borio.authorization.domain.Company;
 import com.borio.authorization.domain.Proposal;
 import com.borio.authorization.domain.ProposalServiceItem;
 import com.borio.authorization.services.ProposalService;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.net.URI;
 
 @RestController
@@ -69,6 +69,14 @@ public class ProposalController {
                                                                  @PathVariable Long serviceId) {
 
         this.proposalService.deleteServiceItem(proposalId, serviceId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/report")
+    public ResponseEntity getReport(@PathVariable Long id) throws JRException, FileNotFoundException {
+
+        this.proposalService.generateReport(id);
+
         return ResponseEntity.ok().build();
     }
 

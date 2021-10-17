@@ -7,7 +7,6 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "companies")
-@Data
 @NoArgsConstructor
 public class Company {
 
@@ -22,7 +21,38 @@ public class Company {
     @ManyToOne
     private User user;
 
-    private byte[] logo;
+    //private byte[] logo;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
 }

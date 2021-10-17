@@ -37,7 +37,7 @@ public class CompanyServiceImpl implements CompanyService {
             Company company = new Company();
             company.setName(companyForm.getName());
             company.setAlias(companyForm.getAlias());
-            company.setLogo(companyForm.getLogo().getBytes());
+            //company.setLogo(companyForm.getLogo().getBytes());
 
             Optional<User> oUser = userRepository.findById(companyForm.getUserId());
 
@@ -56,9 +56,6 @@ public class CompanyServiceImpl implements CompanyService {
         } catch(RuntimeException e) {
             log.error(e.getMessage(),e);
             throw new GeneralAuthorizationException(e.getMessage(),e);
-        } catch (IOException e) {
-            log.error(e.getMessage(),e);
-            throw new SystemAuthorizationException(e.getMessage(),e);
         }
     }
 

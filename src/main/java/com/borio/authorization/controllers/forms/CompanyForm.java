@@ -1,7 +1,5 @@
 package com.borio.authorization.controllers.forms;
 
-import com.borio.authorization.controllers.dtos.UserDto;
-import com.borio.authorization.domain.Company;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +26,6 @@ public class CompanyForm {
     @NotNull(message = "{company.user.null}")
     private Long userId;
 
-    private MultipartFile logo;
+    //private MultipartFile logo;
 
 }

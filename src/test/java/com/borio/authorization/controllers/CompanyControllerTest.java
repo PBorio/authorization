@@ -6,6 +6,7 @@ import com.borio.authorization.domain.User;
 import com.borio.authorization.domain.exceptions.GeneralAuthorizationException;
 import com.borio.authorization.domain.exceptions.ResourceNotFoundException;
 import com.borio.authorization.services.CompanyService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,6 +15,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -37,26 +42,51 @@ public class CompanyControllerTest {
     @Test
     public void shouldCreateANewCompany() throws Exception {
 
+        CompanyForm companyForm = new CompanyForm();
+        companyForm.setUserId(1L);
+        companyForm.setName("EMPRESA TESTE");
+        companyForm.setAlias("empresa_teste");
+
         User user = new User();
-        user.setId(1L);
+        user.setId(companyForm.getUserId());
         Company company = new Company();
         company.setId(1L);
         company.setUser(user);
-        company.setAlias("empresa_teste");
-        company.setName("Empresa Teste LTDA");
+        company.setAlias(companyForm.getAlias());
+        company.setName(companyForm.getName());
 
 
-        when(companyService.create(any(CompanyForm.class))).thenReturn(company);
+        when(companyService.create(companyForm)).thenReturn(company);
 
         this.mockMvc.perform(post("/companies")
-                .content("{ \"userId\": \"1\", " +
-                        "\"name\": \"EMPRESA TESTE LTDA\", " +
-                        "\"alias\": \"empresa_teste\" }")
+                .content(new ObjectMapper().writeValueAsString(companyForm))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists());
 
+    }
+
+    private String buildUrlEncodedFormEntity(String... params) {
+        if( (params.length % 2) > 0 ) {
+            throw new IllegalArgumentException("Need to give an even number of parameters");
+        }
+        StringBuilder result = new StringBuilder();
+        for (int i=0; i<params.length; i+=2) {
+            if( i > 0 ) {
+                result.append('&');
+            }
+            try {
+                result.
+                        append(URLEncoder.encode(params[i], StandardCharsets.UTF_8.name())).
+                        append('=').
+                        append(URLEncoder.encode(params[i+1], StandardCharsets.UTF_8.name()));
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result.toString();
     }
 
 
