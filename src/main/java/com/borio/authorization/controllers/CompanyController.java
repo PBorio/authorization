@@ -2,6 +2,7 @@ package com.borio.authorization.controllers;
 
 import com.borio.authorization.controllers.dtos.CompanyDto;
 import com.borio.authorization.controllers.forms.CompanyForm;
+import com.borio.authorization.controllers.forms.LogoForm;
 import com.borio.authorization.domain.Company;
 import com.borio.authorization.services.CompanyService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -29,6 +30,18 @@ public class CompanyController {
                                                UriComponentsBuilder uriComponentsBuilder) {
 
         Company createdCompany = this.companyService.create(companyForm);
+        CompanyDto companyDto = new CompanyDto(createdCompany);
+
+        URI uri = uriComponentsBuilder.path("/company/{id}").buildAndExpand(companyDto.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(companyDto);
+    }
+
+    @PostMapping(path = "/add/logo", consumes = {"multipart/form-data"})
+    public ResponseEntity<CompanyDto> addLogo(@Valid @ModelAttribute LogoForm logoForm,
+                                                    UriComponentsBuilder uriComponentsBuilder) {
+
+        Company createdCompany = this.companyService.addLogo(logoForm);
         CompanyDto companyDto = new CompanyDto(createdCompany);
 
         URI uri = uriComponentsBuilder.path("/company/{id}").buildAndExpand(companyDto.getId()).toUri();

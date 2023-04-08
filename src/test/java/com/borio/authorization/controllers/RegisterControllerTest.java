@@ -56,7 +56,6 @@ public class RegisterControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists());
-
     }
 
     @Test

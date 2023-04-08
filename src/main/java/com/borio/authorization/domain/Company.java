@@ -21,8 +21,6 @@ public class Company {
     @ManyToOne
     private User user;
 
-    //private byte[] logo;
-
     public Long getId() {
         return id;
     }

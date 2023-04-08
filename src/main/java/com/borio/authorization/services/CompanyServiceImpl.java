@@ -1,6 +1,7 @@
 package com.borio.authorization.services;
 
 import com.borio.authorization.controllers.forms.CompanyForm;
+import com.borio.authorization.controllers.forms.LogoForm;
 import com.borio.authorization.domain.Company;
 import com.borio.authorization.domain.User;
 import com.borio.authorization.domain.exceptions.GeneralAuthorizationException;
@@ -68,5 +69,10 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         return oCompany.get();
+    }
+
+    @Override
+    public Company addLogo(LogoForm logoForm) {
+        return null;
     }
 }

@@ -104,6 +104,20 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
                               constraintName="nn_company_name"
                               tableName="companies"/>
 
+        <createTable tableName="logos">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="company_id" type="BIGINT"/>
+            <column name="logo" type="blob"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="company_id"
+                                 baseTableName="logos"
+                                 constraintName="fk_logo_company_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="companies"/>
+
         <createTable tableName="customers">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true"/>

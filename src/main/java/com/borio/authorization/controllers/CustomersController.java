@@ -41,8 +41,10 @@ public class CustomersController {
         return ResponseEntity.created(uri).body(customerDto);
     }
 
+
+
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDto> getCompany(@PathVariable Long id) {
+    public ResponseEntity<CustomerDto> getCustomer(@PathVariable Long id) {
 
         Customer customer = this.customerService.findById(id);
         CustomerDto customerDto = new CustomerDto(customer);
