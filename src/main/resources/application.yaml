@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: authentication
+  datasource:
+    url: jdbc:mysql://localhost:3306/jwt_auth_db
+    username: root
+    password: borios
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+      hibernate:
+        ddl-auto: update
+      database-platform: org.hibernate.dialect.MySQL8Dialect
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+    h2:
+      console:
+        enabled: true
+
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: DEBUG
+    com.weblogia.authentication: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
