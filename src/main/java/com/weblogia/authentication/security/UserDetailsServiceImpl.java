@@ -11,13 +11,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserDetailsServiceImpl implements UserDetailsService {
 
+    @SuppressWarnings("unused")
     @Autowired
     private UserRepository userRepository;
+
+    public UserDetailsServiceImpl() {
+    }
 
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
 
         User user = userRepository.findByUsername(username);
         if(user == null){

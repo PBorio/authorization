@@ -22,7 +22,11 @@ logging:
   level:
     root: DEBUG
     org.springframework.web: INFO
-    org.springframework.security: DEBUG
+    org.springframework.data: INFO
+    logging:
+      level:
+        org:
+          hibernate: INFO
     com.weblogia.authentication: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"

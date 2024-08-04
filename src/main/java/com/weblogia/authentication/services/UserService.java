@@ -8,7 +8,6 @@ import com.weblogia.authentication.model.UserRole;
 import com.weblogia.authentication.repositories.CompanyRepository;
 import com.weblogia.authentication.repositories.UserRepository;
 import com.weblogia.authentication.repositories.UserRoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +17,47 @@ import java.util.Set;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRoleRepository userRoleRepository;
+    private final UserRoleRepository userRoleRepository;
 
-    @Autowired
-    private CompanyRepository companyRepository;
+    private final CompanyRepository companyRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, UserRoleRepository userRoleRepository,
+                       CompanyRepository companyRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.userRoleRepository = userRoleRepository;
+        this.companyRepository = companyRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public void registerUserAdmin(RegisterUserAdminAndCompanyDTO registerUserAdminAndCompanyDTO) {
+        registerUser(registerUserAdminAndCompanyDTO, "ADMIN");
+    }
+
+
+
+    public void registerUserSysAdmin(AuthRequestDTO registerRequestDTO) {
+        User user = new User();
+        user.setUsername(registerRequestDTO.username());
+        user.setPassword(passwordEncoder.encode(registerRequestDTO.password()));
+
+        UserRole userRole = userRoleRepository.findByName("SYS_ADMIN");
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(userRole);
+        user.setRoles(roles);
+
+        userRepository.save(user);
+    }
+
+    public void registerBasicUser(RegisterUserAdminAndCompanyDTO registerUserAdminAndCompanyDTO){
+        registerUser(registerUserAdminAndCompanyDTO, "USER");
+    }
+
+
+    private void registerUser(RegisterUserAdminAndCompanyDTO registerUserAdminAndCompanyDTO, String role) {
         Company company = companyRepository.findByName(registerUserAdminAndCompanyDTO.companyName());
         if (company == null) {
             company = new Company();
@@ -45,23 +72,6 @@ public class UserService {
         user.setCompany(company);
 
         // Definir role padrão (por exemplo, USER)
-        UserRole userRole = userRoleRepository.findByName("ADMIN");
-        Set<UserRole> roles = new HashSet<>();
-        roles.add(userRole);
-        user.setRoles(roles);
-
-        userRepository.save(user);
-    }
-
-    public void registerUserSysAdmin(AuthRequestDTO registerRequestDTO) {
-        registerUser(registerRequestDTO, "SYS_ADMIN");
-    }
-
-    private void registerUser(AuthRequestDTO registerRequestDTO, String role) {
-        User user = new User();
-        user.setUsername(registerRequestDTO.username());
-        user.setPassword(passwordEncoder.encode(registerRequestDTO.password()));
-
         UserRole userRole = userRoleRepository.findByName(role);
         Set<UserRole> roles = new HashSet<>();
         roles.add(userRole);

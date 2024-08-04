@@ -22,14 +22,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtService jwtService;
+
+    private final UserService userService;
 
     @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private UserService userService;
+    public AuthController(AuthenticationManager authenticationManager,
+                          JwtService jwtService,
+                          UserService userService){
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.userService = userService;
+    }
 
     @PostMapping("/login")
     public JwtResponseDTO AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO){
@@ -49,6 +55,16 @@ public class AuthController {
     public ResponseEntity<String> registerUser(@RequestBody RegisterUserAdminAndCompanyDTO registerUserAdminAndCompanyDTO) {
         try {
             userService.registerUserAdmin(registerUserAdminAndCompanyDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> registerBasicUser(@RequestBody RegisterUserAdminAndCompanyDTO registerUserAdminAndCompanyDTO) {
+        try {
+            userService.registerBasicUser(registerUserAdminAndCompanyDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully!");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed: " + e.getMessage());

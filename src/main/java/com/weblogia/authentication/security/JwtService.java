@@ -1,10 +1,14 @@
 package com.weblogia.authentication.security;
 
+import com.weblogia.authentication.exceptions.CompanyNotInformedException;
+import com.weblogia.authentication.model.User;
+import com.weblogia.authentication.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +20,10 @@ import java.util.function.Function;
 
 @Component
 public class JwtService {
+
+    @Autowired
+    UserRepository userRepository;
+
     public static final String SECRET = "357638792F423F4428472B4B6250655368566D597133743677397A2443264629";
 
     public String extractUsername(String token) {
@@ -52,7 +60,14 @@ public class JwtService {
 
 
     public String generateToken(String username){
+        User user = userRepository.findByUsername(username);
+
         Map<String, Object> claims = new HashMap<>();
+        if (user.getCompany() == null) {
+            throw new CompanyNotInformedException("No Company is informed on the login");
+        }
+
+        claims.put("company", user.getCompany().getId());
         return createToken(claims, username);
     }
 
