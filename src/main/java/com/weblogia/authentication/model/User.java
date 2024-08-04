@@ -113,5 +113,14 @@ public class User {
     public String toString() {
         return "User(id=" + this.getId() + ", username=" + this.getUsername() + ", password=" + this.getPassword() + ", roles=" + this.getRoles() + ", company=" + this.getCompany() + ")";
     }
+
+    public boolean hasRole(String roleName) {
+        return roles.stream()
+                .anyMatch(role -> role.getName().equals(roleName));
+    }
+
+    public boolean isSysAdmin() {
+        return hasRole("SYS_ADMIN");
+    }
 }
 

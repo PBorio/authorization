@@ -1,6 +1,7 @@
 package com.weblogia.authentication.security;
 
 import com.weblogia.authentication.exceptions.CompanyNotInformedException;
+import com.weblogia.authentication.exceptions.UserNotSysAdminException;
 import com.weblogia.authentication.model.User;
 import com.weblogia.authentication.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -34,6 +35,10 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public Long getCompanyFromToken(String token) {
+        return extractClaim(token, claims -> claims.get("company", Long.class));
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -52,9 +57,9 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    public Boolean validateToken(String token, String loginUserName) {
+        final String tokenUsername = extractUsername(token);
+        return (tokenUsername.equals(loginUserName) && !isTokenExpired(token));
     }
 
 
@@ -62,12 +67,24 @@ public class JwtService {
     public String generateToken(String username){
         User user = userRepository.findByUsername(username);
 
-        Map<String, Object> claims = new HashMap<>();
         if (user.getCompany() == null) {
             throw new CompanyNotInformedException("No Company is informed on the login");
         }
 
+        Map<String, Object> claims = new HashMap<>();
         claims.put("company", user.getCompany().getId());
+        return createToken(claims, username);
+    }
+
+    public String generateTokenForSysAdmin(String username, Long companyId) {
+
+        User user = userRepository.findByUsername(username);
+        if (!user.isSysAdmin()){
+            throw new UserNotSysAdminException("User is no System Administrator");
+        }
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("company", companyId);
         return createToken(claims, username);
     }
 
@@ -87,4 +104,6 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+
 }

@@ -2,9 +2,11 @@ package com.weblogia.authentication.controller;
 
 import com.weblogia.authentication.controller.records.AuthRequestDTO;
 import com.weblogia.authentication.controller.records.JwtResponseDTO;
+import com.weblogia.authentication.controller.records.LoginSysAdminDTO;
 import com.weblogia.authentication.controller.records.RegisterUserAdminAndCompanyDTO;
 import com.weblogia.authentication.security.JwtService;
 import com.weblogia.authentication.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +53,20 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/sys-admin/login")
+    public JwtResponseDTO AuthenticateAndGetTokenForSysAdmin(@Valid @RequestBody LoginSysAdminDTO loginSysAdminDTO){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginSysAdminDTO.username(), loginSysAdminDTO.password())
+        );
+
+        if (authentication.isAuthenticated()) {
+            String token = jwtService.generateTokenForSysAdmin(loginSysAdminDTO.username(), loginSysAdminDTO.companyId());
+            return new JwtResponseDTO(token);
+        } else {
+            throw new UsernameNotFoundException("Invalid user request!");
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterUserAdminAndCompanyDTO registerUserAdminAndCompanyDTO) {
         try {
@@ -61,7 +77,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
+    @PostMapping("/user")
     public ResponseEntity<String> registerBasicUser(@RequestBody RegisterUserAdminAndCompanyDTO registerUserAdminAndCompanyDTO) {
         try {
             userService.registerBasicUser(registerUserAdminAndCompanyDTO);

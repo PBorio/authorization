@@ -65,13 +65,11 @@ public class UserService {
             companyRepository.save(company);
         }
 
-        // Criar novo usuário
         User user = new User();
         user.setUsername(registerUserAdminAndCompanyDTO.username());
         user.setPassword(passwordEncoder.encode(registerUserAdminAndCompanyDTO.password()));
         user.setCompany(company);
 
-        // Definir role padrão (por exemplo, USER)
         UserRole userRole = userRoleRepository.findByName(role);
         Set<UserRole> roles = new HashSet<>();
         roles.add(userRole);
