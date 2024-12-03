@@ -1,11 +1,8 @@
 package com.weblogia.authentication.controller;
 
-import com.weblogia.authentication.controller.records.AuthRequestDTO;
-import com.weblogia.authentication.controller.records.JwtResponseDTO;
-import com.weblogia.authentication.controller.records.LoginSysAdminDTO;
-import com.weblogia.authentication.controller.records.RegisterUserAdminAndCompanyDTO;
+import com.weblogia.authentication.controller.records.*;
 import com.weblogia.authentication.security.JwtService;
-import com.weblogia.authentication.services.UserService;
+import com.weblogia.authentication.services.RegisterUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,12 +25,12 @@ public class AuthController {
 
     private final JwtService jwtService;
 
-    private final UserService userService;
+    private final RegisterUserService userService;
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager,
                           JwtService jwtService,
-                          UserService userService){
+                          RegisterUserService userService){
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userService = userService;
@@ -55,6 +52,7 @@ public class AuthController {
 
     @PostMapping("/sys-admin/login")
     public JwtResponseDTO AuthenticateAndGetTokenForSysAdmin(@Valid @RequestBody LoginSysAdminDTO loginSysAdminDTO){
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginSysAdminDTO.username(), loginSysAdminDTO.password())
         );
@@ -77,15 +75,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/user")
-    public ResponseEntity<String> registerBasicUser(@RequestBody RegisterUserAdminAndCompanyDTO registerUserAdminAndCompanyDTO) {
-        try {
-            userService.registerBasicUser(registerUserAdminAndCompanyDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User registration failed: " + e.getMessage());
-        }
-    }
+
 
     @PostMapping("/sys-admin/register")
     public ResponseEntity<String> registerUserSysAdmin(@RequestBody AuthRequestDTO registerRequestDTO) {

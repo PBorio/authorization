@@ -1,6 +1,7 @@
 package com.weblogia.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.weblogia.authentication.exceptions.UserInvalidException;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -24,9 +25,35 @@ public class User {
     @JoinColumn(name = "company_id")
     private Company company;
 
-    public User() {
+    protected User() {
     }
 
+    private User(String username, String password, Company company, UserRole role){
+        this.username = username;
+        this.password = password;
+        this.company = company;
+        this.roles.add(role);
+    }
+
+    private User(String username, String password, UserRole role){
+        this.username = username;
+        this.password = password;
+        this.roles.add(role);
+    }
+
+    public static User createUser(String username, String password, Company company, UserRole role) {
+        assertNameIsInformed(username);
+        assertPasswordIsInformed(password);
+        assertCompanyIsInformed(company);
+        assertRoleIsInformed(role);
+        return new User(username, password, company, role);
+    }
+
+    public static User createSysAdminUser(String username, String password, UserRole role) {assertNameIsInformed(username);
+        assertPasswordIsInformed(password);
+        assertRoleIsInformed(role);
+        return new User(username, password, role);
+    }
 
     public Long getId() {
         return this.id;
@@ -121,6 +148,35 @@ public class User {
 
     public boolean isSysAdmin() {
         return hasRole("SYS_ADMIN");
+    }
+
+    private static void assertRoleIsInformed(UserRole role) {
+        if (role == null ){
+            throw new UserInvalidException("Company was not informed");
+        }
+    }
+
+    private static void assertCompanyIsInformed(Company company) {
+        if (company == null ){
+            throw new UserInvalidException("Company was not informed");
+        }
+    }
+
+    private static void assertPasswordIsInformed(String password) {
+        if (password == null || "".equals(password.trim())){
+            throw new UserInvalidException("Password was not informed");
+        }
+    }
+
+    private static void assertNameIsInformed(String username) {
+        if (username == null || "".equals(username.trim())){
+            throw new UserInvalidException("User name was not informed");
+        }
+    }
+
+
+    public void updatePassord(String newPassword) {
+        this.password = newPassword;
     }
 }
 

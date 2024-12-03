@@ -1,9 +1,11 @@
 package com.weblogia.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.weblogia.authentication.exceptions.PermissionInvalidException;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -26,13 +28,26 @@ public class ApplicationPermission {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    public ApplicationPermission() {}
+    protected ApplicationPermission() {}
 
-    public ApplicationPermission(Application application, Company company, LocalDate startDate, LocalDate endDate) {
+    public ApplicationPermission(Application application, Company company) {
+
+        applicationCannotBeNull(application);
+        companyCannotBeNull(company);
+
         this.application = application;
         this.company = company;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDate = LocalDate.now();
+    }
+
+    private void companyCannotBeNull(Company company) {
+        if (company == null)
+            throw new PermissionInvalidException("A company must be informed to a Permission to be valid");
+    }
+
+    private void applicationCannotBeNull(Application application) {
+        if (application == null)
+            throw new PermissionInvalidException("An Application must be informed for a permission to be valid.");
     }
 
 

@@ -34,10 +34,9 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/v1/login", "/api/v1/register", "api/v1/sys-admin/login").permitAll()
-                        .requestMatchers("/api/v1/sys-admin/**").hasRole("SYS_ADMIN")
+                        .requestMatchers("/api/v1/login", "/api/v1/register", "/api/v1/sys-admin/login").permitAll()
+                        .requestMatchers("/api/v1/permissions/sys-admin/**").hasRole("SYS_ADMIN")
                         .requestMatchers("/api/v1/admin/**").hasAnyRole("SYS_ADMIN", "ADMIN")
-                        //.requestMatchers("/api/v1/applications/**").hasAnyRole("USER", "ADMIN", "SYS_ADMIN")
                         .requestMatchers("/api/v1/**").authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
@@ -61,7 +60,6 @@ public class SecurityConfig {
         authenticationProvider.setUserDetailsService(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
-
     }
 
     @Bean
