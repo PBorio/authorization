@@ -66,6 +66,20 @@ public class ApplicationPermissionController {
         }
     }
 
+    @PostMapping("/sys-admin/revoke-permission/{permissionId}")
+    public ResponseEntity<String> revokePermission(@PathVariable Long permissionId) {
+        Optional<ApplicationPermission> oApplicationPermission = applicationPermissionRepository.findById(permissionId);
+        if (oApplicationPermission.isPresent()) {
+            ApplicationPermission permission = oApplicationPermission.get();
+            permission.revoke();
+            applicationPermissionRepository.save(permission);
+
+            return ResponseEntity.ok(String.format("Permission for %s revoked", permission.getCompany().getName()));
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     private ResponseEntity<List<ApplicationPermission>> notAuthorized() {
         return ResponseEntity.status(401).build();
     }

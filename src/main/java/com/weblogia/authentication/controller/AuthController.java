@@ -43,8 +43,7 @@ public class AuthController {
         );
 
         if (authentication.isAuthenticated()) {
-            String token = jwtService.generateToken(authRequestDTO.username());
-            return new JwtResponseDTO(token);
+            return jwtService.generateToken(authRequestDTO.username());
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
         }
@@ -58,8 +57,7 @@ public class AuthController {
         );
 
         if (authentication.isAuthenticated()) {
-            String token = jwtService.generateTokenForSysAdmin(loginSysAdminDTO.username(), loginSysAdminDTO.companyId());
-            return new JwtResponseDTO(token);
+            return jwtService.generateTokenForSysAdmin(loginSysAdminDTO.username(), loginSysAdminDTO.companyId());
         } else {
             throw new UsernameNotFoundException("Invalid user request!");
         }

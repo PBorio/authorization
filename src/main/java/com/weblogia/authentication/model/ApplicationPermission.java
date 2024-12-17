@@ -40,6 +40,10 @@ public class ApplicationPermission {
         this.startDate = LocalDate.now();
     }
 
+    public void revoke() {
+        this.endDate = LocalDate.now();
+    }
+
     private void companyCannotBeNull(Company company) {
         if (company == null)
             throw new PermissionInvalidException("A company must be informed to a Permission to be valid");
@@ -135,4 +139,6 @@ public class ApplicationPermission {
     public String toString() {
         return "ApplicationPermission(id=" + this.getId() + ", application=" + this.getApplication() + ", company=" + this.getCompany() + ", startDate=" + this.getStartDate() + ", endDate=" + this.getEndDate() + ")";
     }
+
+
 }

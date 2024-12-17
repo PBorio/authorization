@@ -1,8 +1,10 @@
 package com.weblogia.authentication.security;
 
+import com.weblogia.authentication.controller.records.JwtResponseDTO;
 import com.weblogia.authentication.exceptions.CompanyNotInformedException;
 import com.weblogia.authentication.exceptions.UserNotSysAdminException;
 import com.weblogia.authentication.model.User;
+import com.weblogia.authentication.model.UserRole;
 import com.weblogia.authentication.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,13 +12,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Array;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -64,7 +64,7 @@ public class JwtService {
 
 
 
-    public String generateToken(String username){
+    public JwtResponseDTO generateToken(String username){
         User user = userRepository.findByUsername(username);
 
         if (user.getCompany() == null) {
@@ -73,10 +73,17 @@ public class JwtService {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("company", user.getCompany().getId());
-        return createToken(claims, username);
+        String token = createToken(claims, username);
+
+        List<String> roles = new ArrayList<>();
+        for (UserRole role : user.getRoles()){
+            roles.add(role.getName());
+        }
+
+        return new JwtResponseDTO(token, roles);
     }
 
-    public String generateTokenForSysAdmin(String username, Long companyId) {
+    public JwtResponseDTO generateTokenForSysAdmin(String username, Long companyId) {
 
         User user = userRepository.findByUsername(username);
         if (!user.isSysAdmin()){
@@ -85,7 +92,14 @@ public class JwtService {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("company", companyId);
-        return createToken(claims, username);
+        String token = createToken(claims, username);
+
+        List<String> roles = new ArrayList<>();
+        for (UserRole role : user.getRoles()){
+            roles.add(role.getName());
+        }
+
+        return new JwtResponseDTO(token, roles);
     }
 
 
